@@ -24,6 +24,7 @@ namespace Lenticuprint
             using (var gfx = Graphics.FromImage(target)) {
                 gfx.DrawImage(image, left, top, width, height);
             }
+            image.Dispose();
             return target;
         }
 
@@ -38,6 +39,7 @@ namespace Lenticuprint
                 pixels = pixels < 0 ? pixels + image.Width : pixels - image.Width;
                 gfx.DrawImage(image, pixels, 0);
             }
+            image.Dispose();
             return target;
         }
     }

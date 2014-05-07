@@ -29,6 +29,16 @@
         private void InitializeComponent()
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.panel9 = new System.Windows.Forms.Panel();
+            this.panel10 = new System.Windows.Forms.Panel();
+            this._direction = new System.Windows.Forms.ComboBox();
+            this.panel11 = new System.Windows.Forms.Panel();
+            this.label3 = new System.Windows.Forms.Label();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.panel5 = new System.Windows.Forms.Panel();
+            this._lpi = new System.Windows.Forms.NumericUpDown();
+            this.panel4 = new System.Windows.Forms.Panel();
+            this.label1 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this._btnPreview = new System.Windows.Forms.Button();
@@ -40,29 +50,19 @@
             this._pnlImages = new System.Windows.Forms.FlowLayoutPanel();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this._shift = new System.Windows.Forms.TrackBar();
-            this.panel3 = new System.Windows.Forms.Panel();
-            this.panel4 = new System.Windows.Forms.Panel();
-            this.panel5 = new System.Windows.Forms.Panel();
-            this.label1 = new System.Windows.Forms.Label();
-            this._lpi = new System.Windows.Forms.NumericUpDown();
-            this.panel9 = new System.Windows.Forms.Panel();
-            this.panel10 = new System.Windows.Forms.Panel();
-            this.panel11 = new System.Windows.Forms.Panel();
-            this.label3 = new System.Windows.Forms.Label();
-            this._direction = new System.Windows.Forms.ComboBox();
             this.groupBox1.SuspendLayout();
+            this.panel9.SuspendLayout();
+            this.panel10.SuspendLayout();
+            this.panel11.SuspendLayout();
+            this.panel3.SuspendLayout();
+            this.panel5.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this._lpi)).BeginInit();
+            this.panel4.SuspendLayout();
             this.panel1.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this._shift)).BeginInit();
-            this.panel3.SuspendLayout();
-            this.panel4.SuspendLayout();
-            this.panel5.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this._lpi)).BeginInit();
-            this.panel9.SuspendLayout();
-            this.panel10.SuspendLayout();
-            this.panel11.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -76,6 +76,125 @@
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Print Settings";
+            // 
+            // panel9
+            // 
+            this.panel9.Controls.Add(this.panel10);
+            this.panel9.Controls.Add(this.panel11);
+            this.panel9.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel9.Location = new System.Drawing.Point(3, 37);
+            this.panel9.Name = "panel9";
+            this.panel9.Size = new System.Drawing.Size(194, 21);
+            this.panel9.TabIndex = 2;
+            // 
+            // panel10
+            // 
+            this.panel10.Controls.Add(this._direction);
+            this.panel10.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel10.Location = new System.Drawing.Point(55, 0);
+            this.panel10.Name = "panel10";
+            this.panel10.Size = new System.Drawing.Size(139, 21);
+            this.panel10.TabIndex = 1;
+            // 
+            // _direction
+            // 
+            this._direction.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._direction.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this._direction.FormattingEnabled = true;
+            this._direction.Items.AddRange(new object[] {
+            "Horizontal",
+            "Vertical"});
+            this._direction.Location = new System.Drawing.Point(0, 0);
+            this._direction.Name = "_direction";
+            this._direction.Size = new System.Drawing.Size(139, 21);
+            this._direction.TabIndex = 0;
+            // 
+            // panel11
+            // 
+            this.panel11.Controls.Add(this.label3);
+            this.panel11.Dock = System.Windows.Forms.DockStyle.Left;
+            this.panel11.Location = new System.Drawing.Point(0, 0);
+            this.panel11.Name = "panel11";
+            this.panel11.Size = new System.Drawing.Size(55, 21);
+            this.panel11.TabIndex = 0;
+            // 
+            // label3
+            // 
+            this.label3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label3.Location = new System.Drawing.Point(0, 0);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(55, 21);
+            this.label3.TabIndex = 0;
+            this.label3.Text = "Direction";
+            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // panel3
+            // 
+            this.panel3.Controls.Add(this.panel5);
+            this.panel3.Controls.Add(this.panel4);
+            this.panel3.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel3.Location = new System.Drawing.Point(3, 16);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(194, 21);
+            this.panel3.TabIndex = 0;
+            // 
+            // panel5
+            // 
+            this.panel5.Controls.Add(this._lpi);
+            this.panel5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel5.Location = new System.Drawing.Point(55, 0);
+            this.panel5.Name = "panel5";
+            this.panel5.Size = new System.Drawing.Size(139, 21);
+            this.panel5.TabIndex = 1;
+            // 
+            // _lpi
+            // 
+            this._lpi.DecimalPlaces = 5;
+            this._lpi.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._lpi.Increment = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
+            this._lpi.Location = new System.Drawing.Point(0, 0);
+            this._lpi.Maximum = new decimal(new int[] {
+            6000,
+            0,
+            0,
+            0});
+            this._lpi.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this._lpi.Name = "_lpi";
+            this._lpi.Size = new System.Drawing.Size(139, 20);
+            this._lpi.TabIndex = 0;
+            this._lpi.UpDownAlign = System.Windows.Forms.LeftRightAlignment.Left;
+            this._lpi.Value = new decimal(new int[] {
+            673125,
+            0,
+            0,
+            262144});
+            // 
+            // panel4
+            // 
+            this.panel4.Controls.Add(this.label1);
+            this.panel4.Dock = System.Windows.Forms.DockStyle.Left;
+            this.panel4.Location = new System.Drawing.Point(0, 0);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(55, 21);
+            this.panel4.TabIndex = 0;
+            // 
+            // label1
+            // 
+            this.label1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label1.Location = new System.Drawing.Point(0, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(55, 21);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "LPI";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // panel1
             // 
@@ -191,123 +310,6 @@
             this._shift.TabIndex = 0;
             this._shift.TickFrequency = 5;
             // 
-            // panel3
-            // 
-            this.panel3.Controls.Add(this.panel5);
-            this.panel3.Controls.Add(this.panel4);
-            this.panel3.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel3.Location = new System.Drawing.Point(3, 16);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(194, 21);
-            this.panel3.TabIndex = 0;
-            // 
-            // panel4
-            // 
-            this.panel4.Controls.Add(this.label1);
-            this.panel4.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panel4.Location = new System.Drawing.Point(0, 0);
-            this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(55, 21);
-            this.panel4.TabIndex = 0;
-            // 
-            // panel5
-            // 
-            this.panel5.Controls.Add(this._lpi);
-            this.panel5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel5.Location = new System.Drawing.Point(55, 0);
-            this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(139, 21);
-            this.panel5.TabIndex = 1;
-            // 
-            // label1
-            // 
-            this.label1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label1.Location = new System.Drawing.Point(0, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(55, 21);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "LPI";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // _lpi
-            // 
-            this._lpi.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._lpi.Increment = new decimal(new int[] {
-            50,
-            0,
-            0,
-            0});
-            this._lpi.Location = new System.Drawing.Point(0, 0);
-            this._lpi.Maximum = new decimal(new int[] {
-            6000,
-            0,
-            0,
-            0});
-            this._lpi.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this._lpi.Name = "_lpi";
-            this._lpi.Size = new System.Drawing.Size(139, 20);
-            this._lpi.TabIndex = 0;
-            this._lpi.Value = new decimal(new int[] {
-            100,
-            0,
-            0,
-            0});
-            // 
-            // panel9
-            // 
-            this.panel9.Controls.Add(this.panel10);
-            this.panel9.Controls.Add(this.panel11);
-            this.panel9.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel9.Location = new System.Drawing.Point(3, 37);
-            this.panel9.Name = "panel9";
-            this.panel9.Size = new System.Drawing.Size(194, 21);
-            this.panel9.TabIndex = 2;
-            // 
-            // panel10
-            // 
-            this.panel10.Controls.Add(this._direction);
-            this.panel10.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel10.Location = new System.Drawing.Point(55, 0);
-            this.panel10.Name = "panel10";
-            this.panel10.Size = new System.Drawing.Size(139, 21);
-            this.panel10.TabIndex = 1;
-            // 
-            // panel11
-            // 
-            this.panel11.Controls.Add(this.label3);
-            this.panel11.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panel11.Location = new System.Drawing.Point(0, 0);
-            this.panel11.Name = "panel11";
-            this.panel11.Size = new System.Drawing.Size(55, 21);
-            this.panel11.TabIndex = 0;
-            // 
-            // label3
-            // 
-            this.label3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label3.Location = new System.Drawing.Point(0, 0);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(55, 21);
-            this.label3.TabIndex = 0;
-            this.label3.Text = "Direction";
-            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // _direction
-            // 
-            this._direction.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._direction.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this._direction.FormattingEnabled = true;
-            this._direction.Items.AddRange(new object[] {
-            "Horizontal",
-            "Vertical"});
-            this._direction.Location = new System.Drawing.Point(0, 0);
-            this._direction.Name = "_direction";
-            this._direction.Size = new System.Drawing.Size(139, 21);
-            this._direction.TabIndex = 0;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -319,19 +321,19 @@
             this.Name = "Form1";
             this.Text = "Lenticuprint";
             this.groupBox1.ResumeLayout(false);
+            this.panel9.ResumeLayout(false);
+            this.panel10.ResumeLayout(false);
+            this.panel11.ResumeLayout(false);
+            this.panel3.ResumeLayout(false);
+            this.panel5.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this._lpi)).EndInit();
+            this.panel4.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.flowLayoutPanel1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this._shift)).EndInit();
-            this.panel3.ResumeLayout(false);
-            this.panel4.ResumeLayout(false);
-            this.panel5.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this._lpi)).EndInit();
-            this.panel9.ResumeLayout(false);
-            this.panel10.ResumeLayout(false);
-            this.panel11.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }

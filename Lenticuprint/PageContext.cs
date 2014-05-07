@@ -46,7 +46,7 @@ namespace Lenticuprint
 
         public void Render(Bitmap[] images, float left, float top, float right, float bottom)
         {
-            images = (images ?? new Bitmap[0]).Select(i => i.ScaleTo(PrintBounds.Size)).ToArray();
+            images = (images ?? new Bitmap[0]).Select(i => ((Bitmap)i.Clone()).ScaleTo(PrintBounds.Size)).ToArray();
             if (!images.Any()) return;
 
             var scanStart = Horizontal ? top : left;

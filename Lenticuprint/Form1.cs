@@ -59,15 +59,19 @@ namespace Lenticuprint
 
         private Bitmap[] GetImages()
         {
-            var images = _pnlImages.Controls.OfType<ImageItem>().Select(c => (Bitmap)c.Image).ToArray();
+            var images = _pnlImages.Controls.OfType<ImageItem>().Select(c => (Bitmap)c.Image.Clone()).ToArray();
             if (!images.Any()) return images;
+
+            var count = images.Length;
+            var shiftMax = _shift.Maximum*count;
+            var shift = _shift.Value;
+
             var width = images.Max(i => i.Width);
             var height = images.Max(i => i.Height);
             var size = new Size(width, height);
-            images = images.Select(
-                    (image, index) => image
-                        .ScaleTo(size))
-                      .ToArray();
+            images = images.Select(i => i.ScaleTo(size))
+                           .Select((image, index) => image.Shift((int) (width/(double) (shiftMax*count)*(shift*index))))
+                           .ToArray();
             return images;
         }
 
