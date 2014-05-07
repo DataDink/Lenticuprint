@@ -12,7 +12,10 @@ namespace Lenticuprint
         public Form1()
         {
             InitializeComponent();
+            _direction.SelectedIndex = 0;
         }
+
+        public bool Horizontal { get { return _direction.Text == "Horizontal"; } }
 
         /// <summary>
         /// Prompts the user to select an image and adds it to the form
@@ -31,34 +34,12 @@ namespace Lenticuprint
                 var path = dlg.FileName;
                 var fileName = Path.GetFileName(path);
                 var img = Image.FromFile(path);
-                var container = new GroupBox {
-                    Text = fileName,
-                    BackgroundImage = img,
-                    BackgroundImageLayout = ImageLayout.Zoom,
-                    Width = 200,
-                    Height = 200,
+                var control = new ImageItem {
+                    Image = img,
+                    Title = fileName,
                 };
-                var closeButton = new Button {
-                    ForeColor = Color.Red,
-                    Text = @"×",
-                    Width = 20,
-                    Height = 20,
-                    Anchor = AnchorStyles.Right | AnchorStyles.Top,
-                    Left = 180,
-                };
-                var rotateButton = new Button {
-                    ForeColor = Color.Blue,
-                    Text = @"¬",
-                    Width = 20,
-                    Height = 20,
-                    Anchor = AnchorStyles.Right | AnchorStyles.Top,
-                    Left = 160,
-                };
-                closeButton.Click += (s, a) => _pnlImages.Controls.Remove(container);
-                rotateButton.Click += (s, a) => { container.BackgroundImage.RotateFlip(RotateFlipType.Rotate90FlipNone); container.Refresh(); };
-                container.Controls.Add(closeButton);
-                container.Controls.Add(rotateButton);
-                _pnlImages.Controls.Add(container);
+                control.Delete += (s, empty) => _pnlImages.Controls.Remove((Control) s);
+                _pnlImages.Controls.Add(control);
             } catch {
                 MessageBox.Show(@"Image could not be opened or read.");
             }
@@ -69,44 +50,41 @@ namespace Lenticuprint
         /// </summary>
         private bool AlertValidation()
         {
-            if (_pnlImages.Controls.OfType<GroupBox>().Count() < 2) {
+            if (_pnlImages.Controls.OfType<ImageItem>().Count() < 2) {
                 MessageBox.Show(@"This operation requires at least 2 images to be loaded.");
                 return false;
             }
             return true;
         }
 
-        /// <summary>
-        /// Clones all user loaded images from the form and rotates them for maximum printing resolution if requested.
-        /// </summary>
         private Bitmap[] GetImages()
         {
-            var controls = _pnlImages.Controls.OfType<GroupBox>().ToArray();
-            if (!controls.Any()) return new Bitmap[0];
-            var size = controls.First().BackgroundImage.Size;
-            return _pnlImages.Controls.OfType<GroupBox>()
-                .Select((g, i) => {
-                    var image = g.BackgroundImage.ScaleTo(size).Dispose(b => b.Shift(b.Width / 100 * ((_tkbHorzShift.Value*i)%100))); 
-                    image.RotateFlip(RotateFlipType.Rotate90FlipNone); 
-                    return image;
-                })
-                .ToArray();
+            var images = _pnlImages.Controls.OfType<ImageItem>().Select(c => (Bitmap)c.Image).ToArray();
+            if (!images.Any()) return images;
+            var width = images.Max(i => i.Width);
+            var height = images.Max(i => i.Height);
+            var size = new Size(width, height);
+            images = images.Select(
+                    (image, index) => image
+                        .ScaleTo(size))
+                      .ToArray();
+            return images;
         }
 
-        /// <summary>
-        /// Generates a bitmap preview of the resulting lenticulation
-        /// </summary>
-        private Image GenerateImage()
+        private PageContext CreateContext(PrintPageEventArgs document)
         {
-            if (!AlertValidation()) return null;
+            return new PageContext(document) {
+                Horizontal = Horizontal,
+                Lpi = (float) _lpi.Value,
+            };
+        }
+
+        private void RenderDocument(PrintPageEventArgs document)
+        {
             var images = GetImages();
-            var image = new Bitmap(images.Max(i => i.Width), images.Max(i => i.Height));
-            using (var gfx = Graphics.FromImage(image)) {
-                gfx.Lenticulate(images, image.HorizontalResolution, image.HorizontalResolution, 0f, image.Width / image.HorizontalResolution, image.Height / image.HorizontalResolution);
-            }
+            var context = CreateContext(document);
+            context.Render(images);
             images.ToList().ForEach(i => i.Dispose());
-            image.RotateFlip(RotateFlipType.Rotate270FlipNone);
-            return image;
         }
 
         /// <summary>
@@ -114,16 +92,29 @@ namespace Lenticuprint
         /// </summary>
         private void _btnPreview_Click(object sender, EventArgs e)
         {
-            var image = GenerateImage();
-            if (image == null) return;
+            if (!AlertValidation()) return;
+            using (var document = new PrintDocument())
+            using (var preview = new PrintPreviewDialog {Document = document}) {
+                document.PrintPage += (s, context) => RenderDocument(context);
+                preview.ShowDialog();
+            }
+        }
 
-            var view = new Form {
-                Text = @"Preview",
-                BackgroundImageLayout = ImageLayout.Zoom,
-                BackgroundImage = image,
-                BackColor = Color.Black,
-            };
-            view.Show();
+        /// <summary>
+        /// Generates a print document and displays print dialogs to the user
+        /// </summary>
+        private void _btnPrint_Click(object sender, EventArgs e)
+        {
+            if (!AlertValidation()) return;
+            using (var document = new PrintDocument())
+            using (var settings = new PrintDialog { Document = document })
+            {
+                if (settings.ShowDialog() != DialogResult.OK) return;
+
+                document.PrintPage += (s, context) => RenderDocument(context);
+                document.Print();
+            }
+
         }
 
         /// <summary>
@@ -135,94 +126,45 @@ namespace Lenticuprint
         }
 
         /// <summary>
-        /// Prompts the user to save the preview image to disk
-        /// </summary>
-        private void _btnSave_Click(object sender, EventArgs e)
-        {
-            var image = GenerateImage();
-            if (image == null) return;
-
-            var dlg = new SaveFileDialog {
-                Title = @"Save this image",
-                AddExtension = true,
-                ValidateNames = true,
-                Filter = @"JPEG|*.jpg;*.jpeg|Bitmap|*.bmp|Gif|*.gif|Png|*.png"
-            };
-            if (dlg.ShowDialog() != DialogResult.OK) return;
-
-            image.Save(dlg.FileName);
-        }
-
-        /// <summary>
-        /// Generates a print document and displays print dialogs to the user
-        /// </summary>
-        private void _btnPrint_Click(object sender, EventArgs e)
-        {
-            if (!AlertValidation()) return;
-
-            using (var doc = new PrintDocument())
-            using (var settings = new PrintDialog{Document = doc})
-            using (var preview = new PrintPreviewDialog{Document = doc}) {
-                if (settings.ShowDialog() != DialogResult.OK) return;
-
-                var images = GetImages();
-                var dpi = 100f;
-                var lpi = (float) _nupLpi.Value;
-                var margin = (float) _nupMargin.Value;
-                var width = (float) _nupWidth.Value;
-                var height = (float)_nupHeight.Value;
-                doc.PrintPage += (s, a) => a.Graphics.Lenticulate(images, lpi, dpi, margin, width, height);
-                preview.ShowDialog();
-                images.ToList().ForEach(i => i.Dispose());
-            }
-
-        }
-
-        /// <summary>
         /// Generates a print test to help determine the approriate lenticular settings to match your lenticular lense
         /// </summary>
         private void _btnPrintTest_Click(object sender, EventArgs e)
         {
-            using (var doc = new PrintDocument())
-            using (var settings = new PrintDialog { Document = doc })
-            using (var preview = new PrintPreviewDialog{Document = doc}) {
+            using (var document = new PrintDocument())
+            using (var settings = new PrintDialog {Document = document}) {
                 if (settings.ShowDialog() != DialogResult.OK) return;
 
-                doc.PrintPage += (s, a) =>
-                {
-                    var startLpi = (float)_nupLpi.Value - 20;
-                    const float lpiStep = .25f;
-                    const float startCount = 2f;
-                    const float groupSize = 2f;
-                    const float textSize = 14f;
-                    const float rowSize = 100f;
-                    const float colSize = 10f;
-                    const float groupHeight = textSize*groupSize + rowSize*groupSize;
-                    const float rowHeight = rowSize + textSize;
+                document.PrintPage += (s, context) => {
+                    var page = CreateContext(context);
+                    var blue = new Bitmap(page.PrintBounds.Width, page.PrintBounds.Height);
+                    using (var gfx = Graphics.FromImage(blue)) gfx.Clear(Color.Blue);
+                    var red = new Bitmap(page.PrintBounds.Width, page.PrintBounds.Height);
+                    using (var gfx = Graphics.FromImage(red)) gfx.Clear(Color.Red);
+                    var images = new[] {red, blue};
 
-                    var count = startCount;
-                    for (var groupTop = 25f; groupTop + groupHeight <= 1100; groupTop += groupHeight) {
-                        var group = (int) ((groupTop - 25)/groupHeight);
-                        var lpi = startLpi;
-                        for (var rowTop = groupTop; rowTop + rowHeight <= groupTop + groupHeight; rowTop += rowHeight) {
-                            var row = (int) ((rowTop - groupTop)/rowHeight);
-                            for (var colLeft = 25f; colLeft <= 825; colLeft += colSize) {
-                                var col = (int)((colLeft - 25)/colSize);
-                                var line = 100/lpi;
-                                var pen = new Pen(Color.Black, line);
-                                if (col%5 == 0) {
-                                    a.Graphics.DrawString(string.Format("{0}:{1}", Math.Round(lpi, 2), count), SystemFonts.DefaultFont, Brushes.Black, colLeft, rowTop);
-                                }
-                                for (var y = rowTop + textSize; y <= rowTop + rowHeight; y += line * count) {
-                                    a.Graphics.DrawLine(pen, colLeft, y, colLeft + colSize, y);
-                                }
-                                lpi += lpiStep;
-                            }
+                    var blockSize = page.Dpi/2;
+                    var hblockCount = (float)Math.Truncate(page.PrintBounds.Width/blockSize);
+                    var vblockCount = (float)Math.Truncate(page.PrintBounds.Height / blockSize);
+                    var blockCount = hblockCount*vblockCount;
+
+                    var lpiStart = 100f;
+                    var lpiEnd = 600f;
+                    var lpiStep = (lpiEnd - lpiStart)/blockCount;
+
+                    page.Lpi = lpiStart;
+                    for (var h = 0; h < hblockCount; h++) {
+                        for (var v = 0; v < vblockCount; v++) {
+                            var left = h*blockSize;
+                            var top = v*blockSize;
+                            var right = left + blockSize;
+                            var bottom = top + blockSize;
+                            page.Lpi += lpiStep;
+                            page.Render(images, left, top, right, bottom);
                         }
-                        count++;
                     }
+                    images.ToList().ForEach(i => i.Dispose());
                 };
-                preview.ShowDialog();
+                document.Print();
             }
         }
     }
