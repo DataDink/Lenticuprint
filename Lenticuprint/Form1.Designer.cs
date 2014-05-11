@@ -102,8 +102,8 @@
             this._direction.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this._direction.FormattingEnabled = true;
             this._direction.Items.AddRange(new object[] {
-            "Horizontal",
-            "Vertical"});
+            "Vertical",
+            "Horizontal"});
             this._direction.Location = new System.Drawing.Point(0, 0);
             this._direction.Name = "_direction";
             this._direction.Size = new System.Drawing.Size(139, 21);

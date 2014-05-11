@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.IO;
@@ -13,6 +14,39 @@ namespace Lenticuprint
         {
             InitializeComponent();
             _direction.SelectedIndex = 0;
+            _lpi.Value = GetSavedLpi();
+            _lpi.ValueChanged += (s, e) => SaveLpi();
+        }
+
+        private decimal GetSavedLpi()
+        {
+            var config = GetConfiguration();
+            if (!config.Settings.AllKeys.Contains("Lpi")) config = SaveLpi();
+            var value = Convert.ToDecimal(config.Settings["Lpi"].Value);
+            return value;
+        }
+
+        private AppSettingsSection SaveLpi()
+        {
+            var config = GetConfiguration();
+            if (!config.Settings.AllKeys.Contains("Lpi")) config.Settings.Add("Lpi", "0");
+            config.Settings["Lpi"].Value = _lpi.Value.ToString("0.############");
+            config.CurrentConfiguration.Save();
+            return config;
+        }
+
+        private AppSettingsSection GetConfiguration()
+        {
+            var configuration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoaming);
+            AppSettingsSection section;
+            if ((section = configuration.Sections["AppSettings"] as AppSettingsSection) == null)
+            {
+                section = new AppSettingsSection();
+                section.SectionInformation.AllowExeDefinition = ConfigurationAllowExeDefinition.MachineToLocalUser;
+                configuration.Sections.Add("AppSettings", section);
+                configuration.Save();
+            }
+            return section;
         }
 
         public bool Horizontal { get { return _direction.Text == "Horizontal"; } }
@@ -134,6 +168,13 @@ namespace Lenticuprint
         /// </summary>
         private void _btnPrintTest_Click(object sender, EventArgs e)
         {
+            var dlg = new UserNumberDialog {
+                Title = "Configure Test",
+                Caption = "Set the range around the selected LPI you would like to see:",
+                Value = 1
+            };
+            if (dlg.ShowDialog() != DialogResult.OK) { return; }
+
             using (var document = new PrintDocument())
             using (var settings = new PrintDialog {Document = document}) {
                 if (settings.ShowDialog() != DialogResult.OK) return;
@@ -147,25 +188,23 @@ namespace Lenticuprint
                     var images = new[] {red, blue};
 
                     var blockSize = page.Dpi/2;
-                    var hblockCount = (float)Math.Truncate(page.PrintBounds.Width/blockSize);
-                    var vblockCount = (float)Math.Truncate(page.PrintBounds.Height / blockSize);
-                    var blockCount = hblockCount*vblockCount;
+                    var blockCount = (float)Math.Truncate(page.PrintBounds.Height / blockSize);
+                    var startLpi = (float)_lpi.Value - dlg.Value;
+                    var endLpi = (float)_lpi.Value + dlg.Value;
+                    var lpiRange = endLpi - startLpi;
+                    var lpiStep = lpiRange/blockCount;
 
-                    var lpiStart = 100f;
-                    var lpiEnd = 600f;
-                    var lpiStep = (lpiEnd - lpiStart)/blockCount;
-
-                    page.Lpi = lpiStart;
-                    for (var h = 0; h < hblockCount; h++) {
-                        for (var v = 0; v < vblockCount; v++) {
-                            var left = h*blockSize;
-                            var top = v*blockSize;
-                            var right = left + blockSize;
-                            var bottom = top + blockSize;
-                            page.Lpi += lpiStep;
-                            page.Render(images, left, top, right, bottom);
-                        }
+                    for (var i = 0; i < blockCount; i++) {
+                        page.Lpi = startLpi + lpiStep * i;
+                        var top = page.PrintBounds.Top + blockSize*i;
+                        page.Render(images,
+                            page.PrintBounds.Left,
+                            top,
+                            page.PrintBounds.Right,
+                            page.PrintBounds.Bottom);
+                        context.Graphics.DrawString(page.Lpi.ToString("0.##############"), SystemFonts.DefaultFont, Brushes.White, page.PrintBounds.Left, top);
                     }
+
                     images.ToList().ForEach(i => i.Dispose());
                 };
                 document.Print();
