@@ -50,6 +50,9 @@
             this._pnlImages = new System.Windows.Forms.FlowLayoutPanel();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this._shift = new System.Windows.Forms.TrackBar();
+            this.panel6 = new System.Windows.Forms.Panel();
+            this._btnReverse = new System.Windows.Forms.Button();
+            this._btnClear = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.panel9.SuspendLayout();
             this.panel10.SuspendLayout();
@@ -63,6 +66,7 @@
             this.panel2.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this._shift)).BeginInit();
+            this.panel6.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -217,7 +221,7 @@
             this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 66);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(200, 169);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(200, 159);
             this.flowLayoutPanel1.TabIndex = 3;
             // 
             // _btnPreview
@@ -264,17 +268,17 @@
             // 
             this.panel2.Controls.Add(this._btnClose);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel2.Location = new System.Drawing.Point(0, 235);
+            this.panel2.Location = new System.Drawing.Point(0, 225);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(200, 24);
+            this.panel2.Size = new System.Drawing.Size(200, 34);
             this.panel2.TabIndex = 2;
             // 
             // _btnClose
             // 
-            this._btnClose.Dock = System.Windows.Forms.DockStyle.Right;
-            this._btnClose.Location = new System.Drawing.Point(125, 0);
+            this._btnClose.Dock = System.Windows.Forms.DockStyle.Left;
+            this._btnClose.Location = new System.Drawing.Point(0, 0);
             this._btnClose.Name = "_btnClose";
-            this._btnClose.Size = new System.Drawing.Size(75, 24);
+            this._btnClose.Size = new System.Drawing.Size(75, 34);
             this._btnClose.TabIndex = 0;
             this._btnClose.Text = "Close";
             this._btnClose.UseVisualStyleBackColor = true;
@@ -282,19 +286,24 @@
             // 
             // _pnlImages
             // 
+            this._pnlImages.AllowDrop = true;
+            this._pnlImages.AutoScroll = true;
             this._pnlImages.Dock = System.Windows.Forms.DockStyle.Fill;
             this._pnlImages.Location = new System.Drawing.Point(200, 0);
             this._pnlImages.Name = "_pnlImages";
-            this._pnlImages.Size = new System.Drawing.Size(629, 227);
+            this._pnlImages.Size = new System.Drawing.Size(629, 225);
             this._pnlImages.TabIndex = 2;
+            this._pnlImages.DragDrop += new System.Windows.Forms.DragEventHandler(this.OnDragDrop);
+            this._pnlImages.DragEnter += new System.Windows.Forms.DragEventHandler(this.OnDragEnter);
+            this._pnlImages.DragLeave += new System.EventHandler(this.OnDragLeave);
             // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this._shift);
-            this.groupBox2.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.groupBox2.Location = new System.Drawing.Point(200, 227);
+            this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox2.Location = new System.Drawing.Point(0, 0);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(629, 32);
+            this.groupBox2.Size = new System.Drawing.Size(443, 34);
             this.groupBox2.TabIndex = 3;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Horizontal Shift";
@@ -306,9 +315,42 @@
             this._shift.Maximum = 100;
             this._shift.Minimum = -100;
             this._shift.Name = "_shift";
-            this._shift.Size = new System.Drawing.Size(623, 13);
+            this._shift.Size = new System.Drawing.Size(437, 15);
             this._shift.TabIndex = 0;
             this._shift.TickFrequency = 5;
+            // 
+            // panel6
+            // 
+            this.panel6.Controls.Add(this.groupBox2);
+            this.panel6.Controls.Add(this._btnClear);
+            this.panel6.Controls.Add(this._btnReverse);
+            this.panel6.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panel6.Location = new System.Drawing.Point(200, 225);
+            this.panel6.Name = "panel6";
+            this.panel6.Size = new System.Drawing.Size(629, 34);
+            this.panel6.TabIndex = 4;
+            // 
+            // _btnReverse
+            // 
+            this._btnReverse.Dock = System.Windows.Forms.DockStyle.Right;
+            this._btnReverse.Location = new System.Drawing.Point(499, 0);
+            this._btnReverse.Name = "_btnReverse";
+            this._btnReverse.Size = new System.Drawing.Size(130, 34);
+            this._btnReverse.TabIndex = 4;
+            this._btnReverse.Text = "Reverse Image Order";
+            this._btnReverse.UseVisualStyleBackColor = true;
+            this._btnReverse.Click += new System.EventHandler(this._btnReverse_Click);
+            // 
+            // _btnClear
+            // 
+            this._btnClear.Dock = System.Windows.Forms.DockStyle.Right;
+            this._btnClear.Location = new System.Drawing.Point(443, 0);
+            this._btnClear.Name = "_btnClear";
+            this._btnClear.Size = new System.Drawing.Size(56, 34);
+            this._btnClear.TabIndex = 5;
+            this._btnClear.Text = "Clear";
+            this._btnClear.UseVisualStyleBackColor = true;
+            this._btnClear.Click += new System.EventHandler(this._btnClear_Click);
             // 
             // Form1
             // 
@@ -316,7 +358,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(829, 259);
             this.Controls.Add(this._pnlImages);
-            this.Controls.Add(this.groupBox2);
+            this.Controls.Add(this.panel6);
             this.Controls.Add(this.panel1);
             this.Name = "Form1";
             this.Text = "Lenticuprint";
@@ -334,6 +376,7 @@
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this._shift)).EndInit();
+            this.panel6.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -362,6 +405,9 @@
         private System.Windows.Forms.Panel panel4;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox _direction;
+        private System.Windows.Forms.Panel panel6;
+        private System.Windows.Forms.Button _btnReverse;
+        private System.Windows.Forms.Button _btnClear;
     }
 }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Configuration;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Drawing.Printing;
 using System.IO;
 using System.Linq;
@@ -60,23 +61,50 @@ namespace Lenticuprint
                 Title = @"Select an image file...",
                 CheckFileExists = true,
                 CheckPathExists = true,
-                Filter = @"JPEG files|*.jpg;*.jpeg|Bitmap files|*.bmp|GIF Files|*.gif|Portable Network Graphic|*.png",
+                Filter = @"Image Files|*.jpg;*.bmp;*.gif;*.png|JPEG files|*.jpg;*.jpeg|Bitmap files|*.bmp|GIF Files|*.gif|Portable Network Graphic|*.png",
             };
             if (dlg.ShowDialog() != DialogResult.OK) return;
+            var path = dlg.FileName;
+            AddImage(path);
+        }
 
-            try {
-                var path = dlg.FileName;
-                var fileName = Path.GetFileName(path);
-                var img = Image.FromFile(path);
+        private void AddImage(string path)
+        {
+            var fileName = Path.GetFileName(path);
+            var images = GetImages(path);
+            if (images == null || !images.Any()) return;
+            for (var i = 0; i < images.Length; i++) {
+                var name = images.Length > 1 ? string.Format("{0} ({1})", fileName, i) : fileName;
+                var image = images[i];
                 var control = new ImageItem {
-                    Image = img,
-                    Title = fileName,
+                    Image = image,
+                    Title = name,
                 };
-                control.Delete += (s, empty) => _pnlImages.Controls.Remove((Control) s);
+                control.Delete += (s, empty) => _pnlImages.Controls.Remove((Control)s);
                 _pnlImages.Controls.Add(control);
-            } catch {
-                MessageBox.Show(@"Image could not be opened or read.");
             }
+        }
+
+        private Image[] GetImages(string path)
+        {
+            try {
+                var master = Image.FromFile(path);
+                return TrySplitImage(master);
+            } catch {
+                MessageBox.Show("Sorry, this file could not be read.");
+                return null;
+            }
+        }
+
+        private Image[] TrySplitImage(Image master)
+        {
+            var dimension = new FrameDimension(master.FrameDimensionsList[0]);
+            var images = new Image[master.GetFrameCount(dimension)];
+            for (var i = 0; i < images.Length; i++) {
+                master.SelectActiveFrame(dimension, i);
+                images[i] = new Bitmap(master);
+            }
+            return images;
         }
 
         /// <summary>
@@ -209,6 +237,39 @@ namespace Lenticuprint
                 };
                 document.Print();
             }
+        }
+
+        private void _btnReverse_Click(object sender, EventArgs e)
+        {
+            var images = _pnlImages.Controls.OfType<ImageItem>().Reverse().ToList();
+            _pnlImages.Controls.Clear();
+            images.ForEach(_pnlImages.Controls.Add);
+        }
+
+        private void OnDragEnter(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.Copy;
+        }
+
+        private void OnDragLeave(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void OnDragDrop(object sender, DragEventArgs e)
+        {
+            var data = e.Data.GetData("FileNameW") as string[];
+            if (data == null || !data.Any()) data = e.Data.GetData("FileName") as string[];
+            if (data == null || !data.Any()) return;
+
+            foreach (var file in data) {
+                AddImage(file);
+            }
+        }
+
+        private void _btnClear_Click(object sender, EventArgs e)
+        {
+            _pnlImages.Controls.Clear();
         }
     }
 }
